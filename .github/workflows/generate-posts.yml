@@ -1,0 +1,29 @@
+name: Generate posts CSV
+
+on:
+  workflow_dispatch: # ejecutar a mano
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Generate CSV
+        run: |
+          node generate_posts.js
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Generate posts for Publer" || echo "No changes"
+          git push
