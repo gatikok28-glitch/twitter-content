@@ -2,6 +2,9 @@ name: Generate posts CSV
 
 on:
   workflow_dispatch: # ejecutar a mano
+  
+  permissions:
+  contents: write
 
 jobs:
   build:
