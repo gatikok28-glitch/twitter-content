@@ -71,7 +71,9 @@ function main() {
 
   const selected = images.slice(0, POSTS_PER_RUN);
 
-  const rows = ['text,media'];
+  const rows = ['Text,Media URL,Schedule Date,Schedule Time'];
+rows.push(`"${text}","${url}",,`);
+
 
   selected.forEach(file => {
     const text = randomItem(TEXTS);
