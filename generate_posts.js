@@ -67,10 +67,10 @@ function main() {
       `,"${text}",,"${mediaUrl}",,,,,,,,,`
     );
 
-    fs.renameSync(
-      path.join(IMAGES_DIR, file),
-      path.join(USED_DIR, file)
-    );
+    // fs.renameSync(
+//   path.join(IMAGES_DIR, file),
+//   path.join(USED_DIR, file)
+// );
 
     console.log(`➡️ Imagen usada: ${file}`);
   });
