@@ -8,7 +8,7 @@ const REPO_NAME = 'twitter-content';
 const BRANCH = 'main';
 
 // 👉 Cambiá a 3 cuando quieras escalar
-const POSTS_PER_RUN = 2;
+const POSTS_PER_RUN = 1;
 
 /*
 =================================================
