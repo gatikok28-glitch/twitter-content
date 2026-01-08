@@ -1,0 +1,33 @@
+name: Cleanup used images (Sunday)
+
+on:
+  schedule:
+    - cron: "0 12 * * 0" # Domingo 12:00 UTC
+  workflow_dispatch:    # Permite correrlo a mano
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Cleanup used images
+        run: node cleanup_used_images.js
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add images used_images.json
+          git commit -m "Weekly cleanup of used images" || echo "Nothing to commit"
+          git push
