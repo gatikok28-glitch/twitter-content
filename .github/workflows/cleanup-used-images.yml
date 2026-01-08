@@ -2,7 +2,7 @@ name: Cleanup used images (Sunday)
 
 on:
   schedule:
-    - cron: "0 12 * * 0" # Domingo 12:00 UTC
+    - cron: cron: "0 0 * * 1" # Domingo 21:00 Argentina (00:00 UTC del lunes)
   workflow_dispatch:    # Permite correrlo a mano
 
 permissions:
