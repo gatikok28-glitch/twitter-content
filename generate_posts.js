@@ -71,7 +71,7 @@ function main() {
 
   const selected = images.slice(0, POSTS_PER_RUN);
 
-  const rows = ['text,media_url'];
+  const rows = ['text,media'];
 
   selected.forEach(file => {
     const text = randomItem(TEXTS);
