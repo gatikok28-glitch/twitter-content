@@ -7,16 +7,11 @@ const GITHUB_USER = 'gatikok28-glitch';
 const REPO_NAME = 'twitter-content';
 const BRANCH = 'main';
 
-// 👉 Cambiá a 3 cuando quieras escalar
+// Cantidad de posts por ejecución (2 ahora, 3 después)
 const POSTS_PER_RUN = 1;
 
-/*
-=================================================
-📚 BIBLIOTECA DE 90 TEXTOS HUMANOS (SFW)
-=================================================
-*/
+// 📚 Biblioteca de textos humanos
 const TEXTS = [
-  // neutros
   'Daily update',
   'New post',
   'Another one',
@@ -28,7 +23,6 @@ const TEXTS = [
   'Posting this',
   'Sharing this',
 
-  // emoción leve
   'Love this',
   'Really like this',
   'One of my favorites',
@@ -40,7 +34,6 @@ const TEXTS = [
   'This one stands out',
   'Nice one',
 
-  // casual / humano
   'Just sharing',
   'Nothing special, just posting',
   'Here it is',
@@ -52,19 +45,8 @@ const TEXTS = [
   'Posting again',
   'One more',
 
-  // minimalistas (muy humanos)
-  '✨',
-  '.',
-  '—',
-  '..',
-  '...',
-  '*',
-  '~',
-  '✓',
-  '✦',
-  '✧',
+  '✨', '.', '—', '..', '...', '*', '~', '✓', '✦', '✧',
 
-  // descriptivos suaves
   'Today’s image',
   'New image today',
   'Latest image',
@@ -76,7 +58,6 @@ const TEXTS = [
   'Posting an image',
   'This image',
 
-  // variaciones naturales
   'Back with a new post',
   'Posting something new',
   'Another update today',
@@ -88,20 +69,11 @@ const TEXTS = [
   'Fresh post',
   'Here’s today’s post',
 
-  // ultra humanos / bajo esfuerzo
-  'ok',
-  'hm',
-  'yeah',
-  'nice',
-  'cool',
-  'alright',
-  'done',
-  'posted',
-  'upload',
-  'new'
+  'ok', 'hm', 'yeah', 'nice', 'cool', 'alright',
+  'done', 'posted', 'upload', 'new'
 ];
 
-// 🔒 HEADER EXACTO DEL TEMPLATE OFICIAL DE PUBLER (NO MODIFICAR)
+// 🔒 Header EXACTO del template oficial de Publer
 const CSV_HEADER =
   'Date - Intl. format or prompt,Text,Link(s) - Separated by comma for FB carousels,Media URL(s) - Separated by comma,"Title - For the video, pin, PDF ..",Label(s) - Separated by comma,Alt text(s) - Separated by ||,Comment(s) - Separated by ||,"Pin board, FB album, or Google category","Post subtype - I.e. story, reel, PDF ..",CTA - For Facebook links or Google,"Reminder - For stories, reels, shorts, and TikToks"';
 
@@ -112,14 +84,22 @@ const IMAGES_DIR = path.join(ROOT_DIR, 'images');
 const POSTS_DIR = path.join(ROOT_DIR, 'posts');
 const CSV_PATH = path.join(POSTS_DIR, 'posts.csv');
 
+// 📌 Archivo de control de imágenes usadas
+const USED_IMAGES_FILE = path.join(ROOT_DIR, 'used_images.json');
+
 function randomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
 function rawUrl(filename) {
-  // Codifica espacios y caracteres especiales
   const encoded = encodeURIComponent(filename).replace(/%2F/g, '/');
   return `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/${BRANCH}/images/${encoded}`;
+}
+
+function ensureFile(filePath, defaultContent) {
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, defaultContent);
+  }
 }
 
 function ensureDir(dir) {
@@ -130,13 +110,20 @@ function ensureDir(dir) {
 
 function main() {
   ensureDir(POSTS_DIR);
+  ensureFile(USED_IMAGES_FILE, '[]');
+
+  const usedImages = JSON.parse(
+    fs.readFileSync(USED_IMAGES_FILE, 'utf8')
+  );
 
   const images = fs
     .readdirSync(IMAGES_DIR)
-    .filter(f => /\.(jpg|jpeg|png)$/i.test(f));
+    .filter(f => /\.(jpg|jpeg|png)$/i.test(f))
+    // ❗ evitamos reutilizar imágenes ya usadas
+    .filter(f => !usedImages.includes(f));
 
   if (images.length === 0) {
-    console.log('❌ No hay imágenes nuevas en images/');
+    console.log('❌ No hay imágenes nuevas disponibles');
     return;
   }
 
@@ -147,18 +134,26 @@ function main() {
     const text = randomItem(TEXTS);
     const mediaUrl = rawUrl(file);
 
-    // Solo usamos Date (vacío), Text y Media URL(s)
-    // El resto de columnas quedan vacías
     rows.push(
       `,"${text}",,"${mediaUrl}",,,,,,,,,`
     );
+
+    usedImages.push(file);
+    console.log(`📌 Registrada como usada: ${file}`);
   });
 
   fs.writeFileSync(CSV_PATH, rows.join('\n'), 'utf8');
+
+  // Guardamos el registro SIN duplicados
+  fs.writeFileSync(
+    USED_IMAGES_FILE,
+    JSON.stringify([...new Set(usedImages)], null, 2),
+    'utf8'
+  );
+
   console.log(`✅ CSV generado con ${selected.length} posts`);
+  console.log('🗂️ used_images.json actualizado');
 }
 
 main();
-
-
 
