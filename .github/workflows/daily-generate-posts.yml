@@ -1,0 +1,34 @@
+name: Daily generate posts (Mon–Sat)
+
+on:
+  schedule:
+    # Lunes a sábado a las 10:00 UTC
+    - cron: "0 10 * * 1-6"
+  workflow_dispatch: # permite correrlo a mano
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Generate posts CSV
+        run: node generate_posts.js
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add posts/posts.csv used_images.json
+          git commit -m "Daily post generation" || echo "Nothing to commit"
+          git push
