@@ -2,8 +2,8 @@ name: Cleanup used images (Sunday)
 
 on:
   schedule:
-    - cron: cron: "0 0 * * 1" # Domingo 21:00 Argentina (00:00 UTC del lunes)
-  workflow_dispatch:    # Permite correrlo a mano
+    - cron: "0 0 * * 1" # Domingo 21:00 Argentina
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -28,6 +28,6 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add images used_images.json
+          git add images used used_images.json
           git commit -m "Weekly cleanup of used images" || echo "Nothing to commit"
           git push
