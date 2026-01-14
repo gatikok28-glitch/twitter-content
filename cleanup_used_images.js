@@ -2,8 +2,22 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT_DIR = __dirname;
+
 const IMAGES_DIR = path.join(ROOT_DIR, 'images');
+const USED_DIR   = path.join(ROOT_DIR, 'used');
+
 const USED_IMAGES_FILE = path.join(ROOT_DIR, 'used_images.json');
+
+function deleteIfExists(filePath, label) {
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+    console.log(`🗑️ Eliminada de ${label}: ${path.basename(filePath)}`);
+    return 1;
+  } else {
+    console.log(`⚠️ No encontrada en ${label}: ${path.basename(filePath)}`);
+    return 0;
+  }
+}
 
 function main() {
   if (!fs.existsSync(USED_IMAGES_FILE)) {
@@ -23,21 +37,18 @@ function main() {
   let deleted = 0;
 
   usedImages.forEach(file => {
-    const imgPath = path.join(IMAGES_DIR, file);
+    const imagePath = path.join(IMAGES_DIR, file);
+    const usedPath  = path.join(USED_DIR, file);
 
-    if (fs.existsSync(imgPath)) {
-      fs.unlinkSync(imgPath);
-      deleted++;
-      console.log(`🗑️ Eliminada: ${file}`);
-    } else {
-      console.log(`⚠️ No encontrada (ya borrada?): ${file}`);
-    }
+    deleted += deleteIfExists(imagePath, 'images');
+    deleted += deleteIfExists(usedPath, 'used');
   });
 
   // Reset del registro
   fs.writeFileSync(USED_IMAGES_FILE, '[]', 'utf8');
 
-  console.log(`✅ Limpieza completada. ${deleted} imágenes eliminadas.`);
+  console.log(`✅ Limpieza completada. ${deleted} archivos eliminados.`);
 }
 
 main();
+
