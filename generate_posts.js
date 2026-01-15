@@ -8,7 +8,7 @@ const REPO_NAME = 'twitter-content';
 const BRANCH = 'main';
 
 // Cantidad de posts por ejecución (2 ahora, 3 después)
-const POSTS_PER_RUN = 1;
+const POSTS_PER_RUN = 2;
 
 // 📚 Biblioteca de textos humanos
 const TEXTS = [
